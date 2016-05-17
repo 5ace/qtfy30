@@ -89,13 +89,28 @@ func GetVideoDownloadUrlFromMoviePage(url string) {
 
 		pageList := p.Find(".content-text p a")
 
+		htmlPath := "pages/" + md5PageName + ".html"
+
+		InitHtmlTag(htmlPath)
 		for i := 0; i < pageList.Length(); i++ {
 			videoUrl := pageList.Eq(i).Attr("href")
 			videoTitle := strings.TrimSpace(pageList.Eq(i).Text())
 			videoInfo := fmt.Sprintf(movieHtmlTemplete, videoUrl, videoTitle)
-			WriteInfoFile(videoInfo, "pages/"+md5PageName+".html")
+			WriteInfoFile(videoInfo, htmlPath)
 			time.Sleep(time.Second)
 		}
+		CloseHtmlTag(htmlPath)
 	}
 	fmt.Println("finish process page : " + url + "\n")
+}
+
+func InitHtmlTag(fileName string) {
+	initHtmlStr := "<meta charset=\"UTF-8\">"
+	WriteInfoFile(initHtmlStr, fileName)
+}
+
+func CloseHtmlTag(fileName string) {
+	closeHtmlTag := "</html>"
+	WriteInfoFile(closeHtmlTag, fileName)
+
 }

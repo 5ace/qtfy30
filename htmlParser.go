@@ -47,18 +47,18 @@ func FindAllMovieInfoPage(url string) {
 		//movieTitle := strings.TrimSpace(p.Find(".mecctitle").Text())
 		//fmt.Println(movieTitle)
 		pageList := p.Find(".titleimg a")
-
+        ch := make(chan int, 10)
 		for i := 0; i < pageList.Length(); i++ {
+            ch <- 1
 			pageUrl := pageList.Eq(i).Attr("href")
-			go GetVideoDownloadUrlFromMoviePage(pageUrl)
+			GetVideoDownloadUrlFromMoviePage(pageUrl,ch)
 			time.Sleep(3 * time.Second)
 		}
 	}
 	fmt.Println("finish process page list -- : " + url + "\n")
-
 }
 
-func GetVideoDownloadUrlFromMoviePage(url string) {
+func GetVideoDownloadUrlFromMoviePage(url string, ch chan int) {
 	p, err := goquery.ParseUrl(url)
 	if err != nil {
 		retry := 0
@@ -102,6 +102,7 @@ func GetVideoDownloadUrlFromMoviePage(url string) {
 		CloseHtmlTag(htmlPath)
 	}
 	fmt.Println("finish process page : " + url + "\n")
+    <- ch
 }
 
 func InitHtmlTag(fileName string) {
